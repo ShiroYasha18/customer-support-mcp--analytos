@@ -1,0 +1,281 @@
+# LangGraph Agent Configuration
+# Customer Support Workflow - Exact LangGraph Specification
+# 10 stages with proper deterministic/non-deterministic modes and MCP server routing
+
+workflow:
+  name: "Customer Support Workflow"
+  description: "10-stage customer support process matching LangGraph specification"
+  version: "2.0.0"
+  total_stages: 10
+
+stages:
+  # Stage 1: INTAKE - Accept and validate payload
+  - name: "intake"
+    description: "Accept and validate incoming customer payload"
+    mode: "deterministic"
+    server: "common"
+    abilities:
+      - "accept_payload"
+    required_fields: ["customer", "query"]
+    timeout_seconds: 30
+
+  # Stage 2: UNDERSTAND - Parse request and extract entities
+  - name: "understand"
+    description: "Parse request text and extract entities"
+    mode: "deterministic"
+    server: "common"  # Change from atlas to common
+    abilities:
+      - "parse_request_text"  # Common server ability
+      - "extract_entities"    # Atlas server ability
+    timeout_seconds: 60
+
+  # Stage 3: PREPARE - Normalize fields, enrich records, add SLA flags
+  - name: "prepare"
+    description: "Normalize fields, enrich customer records, and add SLA calculations"
+    mode: "deterministic"
+    server: "common"  
+    abilities:
+      - "normalize_fields"      # Common server ability
+      - "enrich_records"        # Atlas server ability
+      - "add_flags_calculations" # Common server ability
+    timeout_seconds: 90
+
+  # Stage 4: ASK - Clarify questions (new stage)
+  - name: "ask"
+    description: "Ask clarifying questions when needed"
+    mode: "deterministic"
+    server: "atlas"
+    abilities:
+      - "clarify_question"
+    timeout_seconds: 45
+
+  # Stage 5: WAIT - Extract and store answers (new stage)
+  - name: "wait"
+    description: "Extract and store customer answers"
+    mode: "deterministic"
+    server: "atlas"
+    abilities:
+      - "extract_answer"
+      - "store_answer"
+    timeout_seconds: 60
+
+  # Stage 6: RETRIEVE - Knowledge base search and data storage
+  - name: "retrieve"
+    description: "Search knowledge base and store relevant data"
+    mode: "deterministic"
+    server: "atlas"
+    abilities:
+      - "knowledge_base_search"
+      - "store_data"
+    max_results: 5
+    relevance_threshold: 0.75
+    timeout_seconds: 120
+
+  # Stage 7: DECIDE - Solution evaluation and escalation (NON-DETERMINISTIC)
+  - name: "decide"
+    description: "Evaluate solutions and make escalation decisions"
+    mode: "non_deterministic"
+    server: "common"  # Change from atlas to common
+    abilities:
+      - "solution_evaluation"   # Common server ability
+      - "escalation_decision"   # Atlas server ability
+      - "update_payload"        # Atlas server ability
+    confidence_threshold: 0.8
+    timeout_seconds: 180
+
+  # Stage 8: CREATE - Generate response
+  - name: "create"
+    description: "Generate final customer response"
+    mode: "deterministic"
+    server: "common"
+    abilities:
+      - "response_generation"
+    quality_threshold: 0.85
+    timeout_seconds: 120
+
+  # Stage 9: UPDATE - Update tickets and close cases
+  - name: "update"
+    description: "Update ticket system and close tickets"
+    mode: "deterministic"
+    server: "atlas"
+    abilities:
+      - "update_ticket"
+      - "close_ticket"
+    timeout_seconds: 90
+
+  # Stage 10: DO - Execute API calls and trigger notifications
+  - name: "do"
+    description: "Execute API calls and trigger notifications"
+    mode: "deterministic"
+    server: "atlas"
+    abilities:
+      - "execute_api_calls"
+      - "trigger_notifications"
+    timeout_seconds: 60
+
+  # Stage 11: COMPLETE - Output final payload
+  - name: "complete"
+    description: "Output structured final payload"
+    mode: "deterministic"
+    server: "common"
+    abilities:
+      - "output_payload"
+    timeout_seconds: 30
+
+# Server Configuration - Updated according to Appendix-1
+servers:
+  common:
+    name: "Common MCP Server"
+    description: "Internal abilities for data processing and business logic"
+    type: "internal"
+    abilities:
+      - "accept_payload"          # INTAKE
+      - "parse_request_text"      # UNDERSTAND
+      - "normalize_fields"        # PREPARE
+      - "add_flags_calculations"  # PREPARE
+      - "solution_evaluation"     # DECIDE
+      - "response_generation"     # CREATE - ADD THIS
+      - "output_payload"          # COMPLETE - ADD THIS
+      - "validate_input"          # Additional Common abilities
+      - "categorize_request"
+      - "calculate_sla_risk"
+      - "assess_priority"
+      - "draft_response"
+      - "assess_complexity"
+      - "rank_recommendations"
+      - "generate_solution"
+
+  atlas:
+    name: "Atlas MCP Server"
+    description: "External abilities for integrations and data enrichment"
+    type: "external"
+    abilities:
+      - "extract_entities"        # UNDERSTAND - ADD THIS
+      - "enrich_records"          # PREPARE - ADD THIS
+      - "clarify_question"        # ASK
+      - "extract_answer"          # WAIT
+      - "store_answer"            # WAIT
+      - "knowledge_base_search"   # RETRIEVE
+      - "store_data"              # RETRIEVE
+      - "escalation_decision"     # DECIDE
+      - "update_payload"          # DECIDE
+      - "update_ticket"           # UPDATE
+      - "close_ticket"            # UPDATE
+      - "execute_api_calls"       # DO
+      - "trigger_notifications"   # DO
+      - "enrich_customer_record"  # Legacy abilities
+      - "search_knowledge_base"
+      - "send_notification"
+
+# Workflow Settings
+settings:
+  max_retries: 3
+  retry_delay_seconds: 5
+  enable_logging: true
+  log_level: "INFO"
+  enable_metrics: true
+  enable_tracing: true
+  
+  # Deterministic vs Non-Deterministic Configuration
+  execution_modes:
+    deterministic_stages: ["intake", "understand", "prepare", "ask", "wait", "retrieve", "create", "update", "do", "complete"]
+    non_deterministic_stages: ["decide"]
+  
+  # Error Handling
+  error_handling:
+    continue_on_non_critical_errors: true
+    critical_stages: ["intake", "complete"]
+    fallback_responses:
+      authentication_failed: "We're unable to verify your account. Please contact support."
+      system_error: "We're experiencing technical difficulties. Please try again later."
+      timeout_error: "Your request is taking longer than expected. We'll follow up shortly."
+  
+  # Performance Thresholds
+  performance:
+    max_total_workflow_time_seconds: 600
+    warning_threshold_seconds: 300
+    stage_timeout_buffer_seconds: 10
+  
+  # Quality Assurance
+  quality:
+    min_confidence_score: 0.7
+    require_human_review_below: 0.5
+    auto_escalate_above_complexity: 0.8
+
+# Output Schema - Structured JSON Payload
+output_schema:
+  type: "object"
+  required_fields:
+    - "case_id"
+    - "customer_id"
+    - "resolution_status"
+    - "response_text"
+    - "escalation_required"
+    - "sla_compliance"
+    - "next_actions"
+  
+  schema:
+    case_id:
+      type: "string"
+      description: "Unique case identifier"
+    customer_id:
+      type: "string"
+      description: "Customer account identifier"
+    resolution_status:
+      type: "string"
+      enum: ["resolved", "escalated", "pending", "closed"]
+    response_text:
+      type: "string"
+      description: "Final response message to customer"
+    escalation_required:
+      type: "boolean"
+      description: "Whether human escalation is needed"
+    sla_compliance:
+      type: "object"
+      properties:
+        met: {"type": "boolean"}
+        response_time_minutes: {"type": "number"}
+        target_time_minutes: {"type": "number"}
+    next_actions:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          action: {"type": "string"}
+          due_date: {"type": "string"}
+          assigned_to: {"type": "string"}
+
+# Monitoring and Analytics
+monitoring:
+  track_stage_performance: true
+  track_customer_satisfaction: true
+  track_resolution_time: true
+  track_escalation_rate: true
+  
+  alerts:
+    high_error_rate_threshold: 0.1
+    slow_response_threshold_seconds: 180
+    escalation_rate_threshold: 0.3
+
+# Integration Points
+integrations:
+  crm_system:
+    enabled: true
+    endpoint: "https://api.crm.company.com/v1"
+    timeout_seconds: 30
+  
+  ticketing_system:
+    enabled: true
+    endpoint: "https://api.tickets.company.com/v2"
+    timeout_seconds: 45
+  
+  knowledge_base:
+    enabled: true
+    endpoint: "https://api.kb.company.com/search"
+    timeout_seconds: 60
+  
+  notification_service:
+    enabled: true
+    email_provider: "sendgrid"
+    sms_provider: "twilio"
+    timeout_seconds: 30

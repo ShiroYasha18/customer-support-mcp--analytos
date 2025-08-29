@@ -1,0 +1,120 @@
+{
+  "customer_id": "CUST-789012",
+  "contact_info": {
+    "email": "sarah.johnson@techcorp.com",
+    "phone": "+1-555-0123",
+    "preferred_contact": "email",
+    "timezone": "America/New_York"
+  },
+  "request": {
+    "subject": "Critical API Integration Issue - Production Down",
+    "description": "Our production API integration with your service has been failing since 2 AM EST. We're getting 500 errors on all authentication endpoints. This is affecting our customer-facing application and we need immediate assistance. Error code: AUTH_TIMEOUT_5001. We have a Premium Support contract (Contract #PS-2024-001) and this should be treated as P1 priority.",
+    "category": "technical_issue",
+    "urgency": "critical",
+    "channel": "email",
+    "attachments": [
+      {
+        "name": "error_logs.txt",
+        "type": "text/plain",
+        "size": 15420,
+        "content_preview": "2024-01-15 02:15:33 ERROR: Authentication timeout on endpoint /api/v2/auth..."
+      },
+      {
+        "name": "network_trace.pcap",
+        "type": "application/octet-stream",
+        "size": 2048576
+      }
+    ]
+  },
+  "customer_context": {
+    "account_type": "enterprise",
+    "subscription_tier": "premium",
+    "contract_details": {
+      "contract_id": "PS-2024-001",
+      "sla_response_time": "15_minutes",
+      "sla_resolution_time": "4_hours",
+      "support_level": "24x7_premium"
+    },
+    "previous_interactions": [
+      {
+        "date": "2024-01-10",
+        "type": "technical_support",
+        "status": "resolved",
+        "satisfaction_score": 4.5,
+        "resolution_time": "2.5_hours"
+      },
+      {
+        "date": "2023-12-15",
+        "type": "billing_inquiry",
+        "status": "resolved",
+        "satisfaction_score": 5.0,
+        "resolution_time": "30_minutes"
+      }
+    ],
+    "technical_profile": {
+      "integration_type": "REST_API",
+      "api_version": "v2.1",
+      "authentication_method": "OAuth2",
+      "usage_volume": "high",
+      "last_successful_call": "2024-01-15T01:45:00Z"
+    }
+  },
+  "system_context": {
+    "timestamp": "2024-01-15T08:30:00Z",
+    "source_system": "customer_portal",
+    "session_id": "sess_abc123def456",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "ip_address": "203.0.113.45",
+    "geolocation": {
+      "country": "United States",
+      "region": "New York",
+      "city": "New York"
+    }
+  },
+  "business_impact": {
+    "severity": "high",
+    "affected_users": 15000,
+    "revenue_impact": "$50000_per_hour",
+    "business_function": "customer_authentication",
+    "compliance_risk": "medium"
+  },
+  "metadata": {
+    "workflow_version": "v1.0",
+    "processing_flags": [
+      "priority_escalation",
+      "sla_monitoring",
+      "executive_notification"
+    ],
+    "expected_outcomes": {
+      "primary": "immediate_technical_resolution",
+      "secondary": "root_cause_analysis",
+      "follow_up": "prevention_measures"
+    },
+    "test_scenarios": {
+      "scenario_type": "production_critical",
+      "validation_points": [
+        "sla_compliance",
+        "escalation_triggers",
+        "notification_delivery",
+        "technical_routing",
+        "priority_handling"
+      ]
+    }
+  },
+  "additional_test_cases": {
+    "edge_cases": {
+      "missing_customer_id": false,
+      "invalid_contact_info": false,
+      "malformed_request": false,
+      "expired_contract": false,
+      "weekend_submission": false
+    },
+    "workflow_variations": {
+      "requires_human_escalation": true,
+      "needs_external_vendor": true,
+      "multi_team_coordination": true,
+      "regulatory_compliance": false,
+      "security_review": true
+    }
+  }
+}
