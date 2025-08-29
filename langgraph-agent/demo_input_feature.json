@@ -1,0 +1,27 @@
+{
+  "customer_id": "CUST-987654",
+  "case_id": "CASE-2024-001237",
+  "workflow_mode": "non_deterministic",
+  "processing_priority": "P4",
+  "contact_info": {
+    "email": "product@innovate.com",
+    "preferred_contact": "email",
+    "timezone": "Europe/London"
+  },
+  "request": {
+    "subject": "Feature Request: Webhook Retry Logic",
+    "description": "Would love to see automatic retry logic for failed webhooks with exponential backoff.",
+    "category": "feature_request",
+    "subcategory": "api_enhancement",
+    "urgency": "low",
+    "channel": "email",
+    "sentiment": "positive",
+    "complexity_score": 7
+  },
+  "customer_context": {
+    "account_type": "enterprise",
+    "subscription_tier": "premium",
+    "sla_response_time": "48_hours",
+    "escalation_threshold": "very_high"
+  }
+}
